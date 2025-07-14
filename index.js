@@ -19,13 +19,15 @@ import fs from 'fs';
 
 
 // const { qr } = pkg;
+/* Defining constants for ease of use later. We use:
+1. FileURLToPath and dirname to get the current directory name
+2. GSBNode to create a Google Safebrowising scanner method utilizing the API Key 
+3. Port and express are simple enough */
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const gsb = new GSBNode({ apiKey: process.env.GSB_API_KEY });
 const port = 3000;
 
-
-console.log(process.env.GSB_API_KEY );
 
 app.use(bodyparser.urlencoded( { extended: true }));
 app.use(express.static(__dirname + '/public'));
@@ -34,6 +36,14 @@ app.use(express.static(__dirname + '/public'));
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/public/index.html")
 } );
+
+/*Using the scan function we first:
+1. Get the link from the request body
+2. Check if the link is an array or a single string and convert it to an array
+3. Use the gsb.lookup method to check the URLs against the Google Safe Browsing API
+4. If any matches are found, we log a message and return a 403 status with an error message
+5. If no matches are found, we call next() to proceed to the next middleware or route handler
+This function is used to scan the URL for malware before generating the QR code.*/
 
 function Scan (req, res, next) {
     const toScan = req.body.link;
@@ -49,9 +59,18 @@ function Scan (req, res, next) {
 }
 // app.post("/virus-scan", Scan);
 
+/* Using the qrGenerate function we:
+1. Get the link from the request body
+2. Use the qr.image method to generate a QR code in SVG format 
+3. Create a write stream to save the QR code to a file named 'i_love_qr.svg'
+4. Pipe the QR code data to the write stream
+5. Listen for the 'finish' event to log a success message and call next()
+6. Listen for the 'error' event to log an error message and send a 500
+status with an error message
+This function is used to generate the QR code from the user-entered URL and save it to
+*/
 function qrGenerate(req, res, next) {
      const toMake = req.body.link;
-     console.log("Generating QR code for:", toMake);
     const qr_svg = qr.image(toMake, { type: 'svg' });
     const writeStream = fs.createWriteStream('i_love_qr.svg');
     qr_svg.pipe(writeStream);
