@@ -1,3 +1,7 @@
+"scripts": {
+  "start": "node index.js"
+}
+
 {
   "dependencies": {
     "@inquirer/prompts": "^7.6.0",
