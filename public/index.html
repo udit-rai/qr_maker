@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Input Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+	<div class="container__item">
+		<p>Please make sure you include "http OR https with the ://"</p>
+		<form action="/generate-qr" method="post" class="form">
+			<input required="true" name="link" type="text" class="form__field" placeholder="Paste your URL" />
+			<button type="submit" class="btn btn--primary btn--inside">Generate QR Code</button>
+		</form>
+	</div>
+</body>
+</html>
